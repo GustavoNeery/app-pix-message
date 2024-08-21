@@ -8,11 +8,25 @@ datasource db {
 }
 
 model Participant {
-  id                String @id @default(uuid())
-  nome              String
-  cpfCnpj           String
-  ispb              String
-  agencia           String
-  contaTransacional String
-  tipoConta         String
+  id                    String        @id @default(uuid())
+  nome                  String
+  cpfCnpj               String
+  ispb                  String
+  agencia               String
+  contaTransacional     String
+  tipoConta             String
+  transactionsPagador   Transaction[] @relation("pagador")
+  transactionsRecebedor Transaction[] @relation("recebedor")
+}
+
+model Transaction {
+  id                String      @id @default(uuid()) @map("endToEndId")
+  valor             Decimal
+  pagador           Participant @relation("pagador", fields: [pagadorId], references: [id])
+  recebedor         Participant @relation("recebedor", fields: [recebedorId], references: [id])
+  campoLivre        String      @default("")
+  txId              String      @default(uuid())
+  dataHoraPagamento DateTime    @map("data_hora_pagamento")
+  pagadorId         String
+  recebedorId       String
 }
