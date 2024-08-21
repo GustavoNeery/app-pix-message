@@ -1,6 +1,9 @@
 import fastify from "fastify";
+import { createTransaction } from "./routes/transaction.routes";
 
 const app = fastify();
+
+app.register(createTransaction);
 
 app.get('/', (request, reply) => {
   reply.send({ message: 'First route pix message!'});
