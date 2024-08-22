@@ -9,8 +9,8 @@ class TransactionController {
   }
 
   execute(request: FastifyRequest<{Params: IRequestParamsDTO}>, reply: FastifyReply) {
-    const { number } = request.params;
-    this.transactionService.execute(number);
+    const { number, ispb } = request.params;
+    this.transactionService.execute(number, ispb);
     return reply.status(201).send({message: 'Transaction generated!'});
   }
 }

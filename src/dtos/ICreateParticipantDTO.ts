@@ -1,7 +1,7 @@
 interface ICreateParticipantDTO {
   nome: string;
   cpfCnpj: string;
-  ispb?: string;
+  ispb: string;
   agencia: string;
   contaTransacional: string;
   tipoConta: string;

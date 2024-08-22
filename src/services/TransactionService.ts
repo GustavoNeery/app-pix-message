@@ -10,18 +10,18 @@ class TransactionService {
     this.participantService = participantService;
   }
 
-  async generateTransaction(): Promise<ICreateTransactionDTO> {
+  async generateTransaction(ispb: string): Promise<ICreateTransactionDTO> {
     return {
       valor: new Decimal(parseFloat((Math.random() * (1000 - 0) + 0).toFixed(2))),
       dataHoraPagamento: new Date(),
       pagador: await this.participantService.execute(),
-      recebedor: await this.participantService.execute()
+      recebedor: await this.participantService.execute(ispb)
     }
   }
 
-  async execute(number: string) {
+  async execute(number: string, ispb: string) {
     for(let i = 0; i < parseInt(number); i++) {
-      const transactionGenerated = await this.generateTransaction();
+      const transactionGenerated = await this.generateTransaction(ispb);
       console.log(transactionGenerated);
     }
   }
