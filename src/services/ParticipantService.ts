@@ -1,9 +1,14 @@
 import { faker } from "@faker-js/faker";
 import ICreateParticipantDTO from "../dtos/ICreateParticipantDTO";
+import { ParticipantRepository } from "../repositories/participant/ParticipantRepository";
+import { participantRepositoryInstance } from "../repositories/participant/ParticipantRepository";
+import { Participant } from "../entities/Participant";
 
 class ParticipantService {
-  constructor() {
-
+  private participantRepository: ParticipantRepository;
+  
+  constructor(participantRepository: ParticipantRepository) {
+    this.participantRepository = participantRepository;
   }
 
   async generateParticipant(ispb?: string): Promise<ICreateParticipantDTO> {
@@ -17,12 +22,12 @@ class ParticipantService {
     }
   }
 
-  async execute(ispb?: string) {
+  async execute(ispb?: string): Promise<Participant> {
     const participantGenerated = await this.generateParticipant(ispb);
-    return participantGenerated;
+    return await this.participantRepository.create(participantGenerated);
   }
 }
 
-const participantServiceInstance = new ParticipantService();
+const participantServiceInstance = new ParticipantService(participantRepositoryInstance);
 
 export { participantServiceInstance, ParticipantService };

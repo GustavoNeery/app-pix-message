@@ -3,7 +3,7 @@ import ICreateTransactionDTO from "../../dtos/ICreateTransactionDTO";
 import { ITransactionRepository } from "../transaction/ITransactionRepository";
 import { Transaction } from "../../entities/Transaction";
 
-class TransactionRepositoy implements ITransactionRepository {
+class TransactionRepository implements ITransactionRepository {
   
   async create(transaction: ICreateTransactionDTO): Promise<Transaction> {
     const transactionCreated = await prisma.transaction.create({
@@ -27,6 +27,6 @@ class TransactionRepositoy implements ITransactionRepository {
   }
 }
 
-const transactionRepositoyInstance = new TransactionRepositoy();
+const transactionRepositoryInstance = new TransactionRepository();
 
-export {transactionRepositoyInstance, TransactionRepositoy};
+export {transactionRepositoryInstance, TransactionRepository};

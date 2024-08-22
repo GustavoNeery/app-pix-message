@@ -1,10 +1,10 @@
 import { Decimal } from "@prisma/client/runtime/library";
-import ICreateParticipantDTO from "./ICreateParticipantDTO";
+import { Participant } from "../entities/Participant";
 interface ICreateTransactionDTO {
   valor: Decimal;
   dataHoraPagamento: Date;
-  pagador: ICreateParticipantDTO;
-  recebedor: ICreateParticipantDTO;
+  pagador: Participant;
+  recebedor: Participant;
 }
 
 export default ICreateTransactionDTO;

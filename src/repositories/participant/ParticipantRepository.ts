@@ -3,9 +3,9 @@ import ICreateParticipantDTO from "../../dtos/ICreateParticipantDTO";
 import { IParticipantRespository } from "../participant/IParticipantRepository";
 import { Participant } from "../../entities/Participant";
 
-export class ParticipantRepository implements IParticipantRespository{
+class ParticipantRepository implements IParticipantRespository {
   
-  async create(participant: ICreateParticipantDTO): Promise<Participant>{
+  async create(participant: ICreateParticipantDTO): Promise<Participant> {
     const participantCreated = await prisma.participant.create({
       data: {
         nome: participant.nome,
@@ -23,4 +23,4 @@ export class ParticipantRepository implements IParticipantRespository{
 
 const participantRepositoryInstance = new ParticipantRepository();
 
-export default participantRepositoryInstance; 
+export { participantRepositoryInstance, ParticipantRepository }; 
