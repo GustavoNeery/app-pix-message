@@ -1,6 +1,7 @@
+import { AppError } from "../errors/AppError";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { TransactionService, transactionServiceInstance } from "../services/TransactionService";
 import IRequestParamsDTO from "../dtos/IRequestParamsDTO";
+import { TransactionService, transactionServiceInstance } from "../services/TransactionService";
 
 class TransactionController {
   private transactionService: TransactionService;
@@ -10,8 +11,29 @@ class TransactionController {
 
   execute(request: FastifyRequest<{Params: IRequestParamsDTO}>, reply: FastifyReply) {
     const { number, ispb } = request.params;
-    this.transactionService.execute(number, ispb);
-    return reply.status(201).send({message: 'Transaction generated!'});
+    try {
+
+      if(!ispb || !number) {
+        throw AppError.badRequest('Number or ISPB not provided.');
+      }
+
+      const parsedNumber = Number(number);
+
+      if (Number.isNaN(parsedNumber) || parsedNumber === 0) {
+        throw AppError.badRequest('The number parameter must be a valid number.');
+      }
+
+      this.transactionService.execute(number, ispb);
+      return reply.status(201).send({message: 'Transactions generated!'});
+
+    } catch(error) {
+      
+      if(error instanceof AppError) {
+        return reply.status(error.statusCode).send({ error: error.message});
+      }
+
+      return reply.status(500).send({ error: 'Internal server error' });
+    }
   }
 }
 
