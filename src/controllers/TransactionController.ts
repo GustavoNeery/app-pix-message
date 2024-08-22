@@ -16,4 +16,5 @@ class TransactionController {
 }
 
 const transactionController = new TransactionController(transactionServiceInstance);
+
 export default transactionController;
