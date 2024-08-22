@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { TransactionService, transactionServiceInstance } from "../services/TransactionService";
+import IRequestParamsDTO from "../dtos/IRequestParamsDTO";
 
 class TransactionController {
   private transactionService: TransactionService;
@@ -7,9 +8,10 @@ class TransactionController {
     this.transactionService = transactionService;
   }
 
-  execute(request: FastifyRequest, reply: FastifyReply) {
-    this.transactionService.execute();
-    reply.status(201).send({message: 'Transaction generated!'});
+  execute(request: FastifyRequest<{Params: IRequestParamsDTO}>, reply: FastifyReply) {
+    const { number } = request.params;
+    this.transactionService.execute(number);
+    return reply.status(201).send({message: 'Transaction generated!'});
   }
 }
 

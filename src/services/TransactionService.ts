@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/library";
 import ICreateTransactionDTO from "../dtos/ICreateTransactionDTO";
 
 class TransactionService {
@@ -5,13 +6,18 @@ class TransactionService {
 
   }
 
-  generateTransaction() {
-    
+  async generateTransaction(): Promise<ICreateTransactionDTO> {
+    return {
+      valor: new Decimal(parseFloat((Math.random() * (1000 - 0) + 0).toFixed(2))),
+      dataHoraPagamento: new Date() 
+    }
   }
 
-  execute() {
-    this.generateTransaction();
-    console.log('Transaction generate');
+  async execute(number: string) {
+    for(let i = 0; i < parseInt(number); i++) {
+      const transactionGenerated = await this.generateTransaction();
+    }
+    console.log('Transactions generated');
   }
 }
 

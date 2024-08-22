@@ -5,11 +5,6 @@ const app = fastify();
 
 app.register(createTransaction);
 
-app.get('/', (request, reply) => {
-  reply.send({ message: 'First route pix message!'});
-})
-
-
 app.listen({port: 3000, host: '0.0.0.0'}, (err, address) => {
   if (err) {
     console.error("Error starting server: ", err);
