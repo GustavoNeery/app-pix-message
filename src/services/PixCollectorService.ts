@@ -1,13 +1,33 @@
+import { FastifyReply } from "fastify";
 import { Readable, Writable } from "stream";
+import { Transaction } from "../entities/Transaction";
 import { TransactionRepository } from "../repositories/transaction/TransactionRepository";
 import { transactionRepositoryInstance } from "../repositories/transaction/TransactionRepository";
-import { Transaction } from "../entities/Transaction";
-import { FastifyReply } from "fastify";
 
 class PixCollectorService {
+  private readonly maxWaitTime = 8000; // 8 segundos
+  private readonly pollInterval = 500;
   private transactionRepository: TransactionRepository;
   constructor(transactionRepository: TransactionRepository) {
     this.transactionRepository = transactionRepository;
+  }
+
+  async waitForMessages(ispb: string): Promise<Transaction[]> {
+    const startTime = Date.now();
+    let transactions: Transaction[] = [];
+
+    return new Promise((resolve) => {
+      const interval = setInterval(async () => {
+        transactions = await this.transactionRepository.findByIspb(ispb);
+        if (
+          transactions.length > 0 ||
+          Date.now() - startTime > this.maxWaitTime
+        ) {
+          clearInterval(interval);
+          resolve(transactions);
+        }
+      }, this.pollInterval);
+    });
   }
 
   createReadableAndWritableStream(
@@ -46,9 +66,10 @@ class PixCollectorService {
     });
   }
 
-  async execute(ispb: string, reply: FastifyReply) {
-    const transactions = await this.transactionRepository.findByIspb(ispb);
+  async execute(ispb: string, reply: FastifyReply): Promise<Transaction[]> {
+    const transactions = await this.waitForMessages(ispb);
     this.createReadableAndWritableStream(transactions, reply);
+    return transactions;
   }
 }
 

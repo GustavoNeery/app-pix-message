@@ -17,7 +17,11 @@ class PixCollectorController {
   ) {
     const { ispb } = request.params;
 
-    this.pixCollectorService.execute(ispb, reply);
+    const transactions = await this.pixCollectorService.execute(ispb, reply);
+
+    if (transactions.length === 0) {
+      return reply.code(204).send();
+    }
 
     reply.raw.writeHead(200, {
       "Content-Type": "application/json",
