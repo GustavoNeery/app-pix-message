@@ -3,4 +3,5 @@ import { Transaction } from "../../entities/Transaction";
 
 export interface ITransactionRepository {
   create(transaction: ICreateTransactionDTO): Promise<Transaction>;
+  findByIspb(ispb: string): Promise<Transaction[]>;
 }

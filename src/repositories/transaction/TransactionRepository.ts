@@ -24,6 +24,22 @@ class TransactionRepository implements ITransactionRepository {
 
     return transactionCreated;
   }
+
+  async findByIspb(ispb: string): Promise<Transaction[]> {
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        recebedor: {
+          ispb: ispb,
+        },
+      },
+      include: {
+        recebedor: true,
+        pagador: true,
+      },
+    });
+
+    return transactions;
+  }
 }
 
 const transactionRepositoryInstance = new TransactionRepository();
