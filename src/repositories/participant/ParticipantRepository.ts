@@ -4,7 +4,6 @@ import { IParticipantRespository } from "../participant/IParticipantRepository";
 import { Participant } from "../../entities/Participant";
 
 class ParticipantRepository implements IParticipantRespository {
-  
   async create(participant: ICreateParticipantDTO): Promise<Participant> {
     const participantCreated = await prisma.participant.create({
       data: {
@@ -13,8 +12,8 @@ class ParticipantRepository implements IParticipantRespository {
         ispb: participant.ispb,
         agencia: participant.agencia,
         contaTransacional: participant.contaTransacional,
-        tipoConta: participant.tipoConta
-      }
+        tipoConta: participant.tipoConta,
+      },
     });
 
     return participantCreated;
@@ -23,4 +22,4 @@ class ParticipantRepository implements IParticipantRespository {
 
 const participantRepositoryInstance = new ParticipantRepository();
 
-export { participantRepositoryInstance, ParticipantRepository }; 
+export { participantRepositoryInstance, ParticipantRepository };

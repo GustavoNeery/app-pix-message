@@ -7,13 +7,20 @@ class Participant {
   contaTransacional: string;
   tipoConta: string;
 
-  constructor({ nome, cpfCnpj, ispb, agencia, contaTransacional, tipoConta } : Participant) {
-      this.nome = nome;
-      this.cpfCnpj = cpfCnpj;
-      this.ispb = ispb;
-      this.agencia = agencia;
-      this.contaTransacional = contaTransacional;
-      this.tipoConta = tipoConta;
+  constructor({
+    nome,
+    cpfCnpj,
+    ispb,
+    agencia,
+    contaTransacional,
+    tipoConta,
+  }: Participant) {
+    this.nome = nome;
+    this.cpfCnpj = cpfCnpj;
+    this.ispb = ispb;
+    this.agencia = agencia;
+    this.contaTransacional = contaTransacional;
+    this.tipoConta = tipoConta;
   }
 }
 

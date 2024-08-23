@@ -4,17 +4,16 @@ import { ITransactionRepository } from "../transaction/ITransactionRepository";
 import { Transaction } from "../../entities/Transaction";
 
 class TransactionRepository implements ITransactionRepository {
-  
   async create(transaction: ICreateTransactionDTO): Promise<Transaction> {
     const transactionCreated = await prisma.transaction.create({
       data: {
         valor: transaction.valor,
         dataHoraPagamento: transaction.dataHoraPagamento,
         pagador: {
-          connect: {id: transaction.pagador.id },
+          connect: { id: transaction.pagador.id },
         },
         recebedor: {
-          connect: {id: transaction.recebedor.id },
+          connect: { id: transaction.recebedor.id },
         },
       },
       include: {
@@ -29,4 +28,4 @@ class TransactionRepository implements ITransactionRepository {
 
 const transactionRepositoryInstance = new TransactionRepository();
 
-export {transactionRepositoryInstance, TransactionRepository};
+export { transactionRepositoryInstance, TransactionRepository };
