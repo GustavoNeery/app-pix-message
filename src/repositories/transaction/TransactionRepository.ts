@@ -33,12 +33,28 @@ class TransactionRepository implements ITransactionRepository {
         },
       },
       include: {
-        recebedor: true,
         pagador: true,
+        recebedor: true,
       },
     });
 
     return transactions;
+  }
+
+  async findFirstByIspb(ispb: string): Promise<Transaction | null> {
+    const transaction = await prisma.transaction.findFirst({
+      where: {
+        recebedor: {
+          ispb: ispb,
+        },
+      },
+      include: {
+        pagador: true,
+        recebedor: true,
+      },
+    });
+
+    return transaction;
   }
 }
 

@@ -12,17 +12,19 @@ class PixCollectorService {
     this.transactionRepository = transactionRepository;
   }
 
-  async waitForMessages(ispb: string): Promise<Transaction[]> {
+  async waitForMessages(
+    ispb: string,
+    isMultiPart: boolean
+  ): Promise<Transaction[] | Transaction | null> {
     const startTime = Date.now();
-    let transactions: Transaction[] = [];
 
     return new Promise((resolve) => {
       const interval = setInterval(async () => {
-        transactions = await this.transactionRepository.findByIspb(ispb);
-        if (
-          transactions.length > 0 ||
-          Date.now() - startTime > this.maxWaitTime
-        ) {
+        const transactions = await this.verifyFindManyOrFindFirst(
+          ispb,
+          isMultiPart
+        );
+        if (transactions || Date.now() - startTime > this.maxWaitTime) {
           clearInterval(interval);
           resolve(transactions);
         }
@@ -30,16 +32,29 @@ class PixCollectorService {
     });
   }
 
+  async verifyFindManyOrFindFirst(ispb: string, isMultiPart: boolean) {
+    if (isMultiPart) {
+      return await this.transactionRepository.findByIspb(ispb);
+    } else {
+      return await this.transactionRepository.findFirstByIspb(ispb);
+    }
+  }
+
   createReadableAndWritableStream(
-    transactions: Transaction[],
+    transactions: Transaction[] | Transaction | null,
     reply: FastifyReply
   ) {
     const readableStream = new Readable({
       objectMode: true,
       read() {
-        if (transactions.length > 0) {
-          this.push(JSON.stringify(transactions.shift()));
+        if (Array.isArray(transactions)) {
+          if (transactions.length > 0) {
+            this.push(JSON.stringify(transactions.shift()));
+          } else {
+            this.push(null);
+          }
         } else {
+          this.push(JSON.stringify(transactions));
           this.push(null);
         }
       },
@@ -66,8 +81,12 @@ class PixCollectorService {
     });
   }
 
-  async execute(ispb: string, reply: FastifyReply): Promise<Transaction[]> {
-    const transactions = await this.waitForMessages(ispb);
+  async execute(
+    ispb: string,
+    reply: FastifyReply,
+    isMultiPart: boolean
+  ): Promise<Transaction[] | Transaction | null> {
+    const transactions = await this.waitForMessages(ispb, isMultiPart);
     this.createReadableAndWritableStream(transactions, reply);
     return transactions;
   }

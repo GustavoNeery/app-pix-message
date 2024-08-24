@@ -4,6 +4,7 @@ import {
   PixCollectorService,
   pixCollectorServiceInstance,
 } from "../services/PixCollectorService";
+import { AppError } from "../errors/AppError";
 
 class PixCollectorController {
   private pixCollectorService: PixCollectorService;
@@ -16,17 +17,39 @@ class PixCollectorController {
     reply: FastifyReply
   ) {
     const { ispb } = request.params;
+    const header = request.headers["accept"];
+    let isMultiPart = false;
 
-    const transactions = await this.pixCollectorService.execute(ispb, reply);
+    try {
+      if (header === "multipart/json") {
+        isMultiPart = true;
+      }
 
-    if (transactions.length === 0) {
-      return reply.code(204).send();
+      if (!ispb) {
+        throw AppError.badRequest("ISPB not provided.");
+      }
+
+      const transactions = await this.pixCollectorService.execute(
+        ispb,
+        reply,
+        isMultiPart
+      );
+
+      if (!transactions) {
+        return reply.code(204).send();
+      }
+
+      reply.raw.writeHead(200, {
+        "Content-Type": "application/json",
+        "Transfer-Encoding": "chunked",
+      });
+    } catch (error) {
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).send({ error: error.message });
+      }
+
+      return reply.status(500).send({ error: "Internal server error" });
     }
-
-    reply.raw.writeHead(200, {
-      "Content-Type": "application/json",
-      "Transfer-Encoding": "chunked",
-    });
   }
 }
 
