@@ -32,6 +32,7 @@ class TransactionRepository implements ITransactionRepository {
           ispb: ispb,
         },
       },
+      take: 10,
       include: {
         pagador: true,
         recebedor: true,
