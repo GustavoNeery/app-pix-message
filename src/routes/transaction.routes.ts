@@ -14,6 +14,16 @@ export async function createTransaction(app: FastifyInstance) {
     }
   );
 
+  app.get(
+    "/api/pix/:ispb/stream/:interationId",
+    async (
+      request: FastifyRequest<{ Params: IRequestParamsDTO }>,
+      reply: FastifyReply
+    ) => {
+      await PixCollectorController.execute(request, reply);
+    }
+  );
+
   app.post(
     "/api/util/msgs/:ispb/:number",
     async (

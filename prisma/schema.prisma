@@ -29,4 +29,14 @@ model Transaction {
   dataHoraPagamento DateTime    @map("data_hora_pagamento")
   pagadorId         String
   recebedorId       String
+  interationId      String @default("")
 }
+
+model Interation {
+  id            String   @id @default(dbgenerated("substring(md5(random()::text), 1, 12)")) @db.Char(12)
+  ispb          String
+  callCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+

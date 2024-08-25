@@ -3,13 +3,22 @@ import { Readable, Writable } from "stream";
 import { Transaction } from "../entities/Transaction";
 import { TransactionRepository } from "../repositories/transaction/TransactionRepository";
 import { transactionRepositoryInstance } from "../repositories/transaction/TransactionRepository";
+import {
+  InterationService,
+  interationServiceInstance,
+} from "./InterationService";
 
 class PixCollectorService {
   private readonly maxWaitTime = 8000; // 8 segundos
   private readonly pollInterval = 500;
   private transactionRepository: TransactionRepository;
-  constructor(transactionRepository: TransactionRepository) {
+  private interationService: InterationService;
+  constructor(
+    transactionRepository: TransactionRepository,
+    interationService: InterationService
+  ) {
     this.transactionRepository = transactionRepository;
+    this.interationService = interationService;
   }
 
   async waitForMessages(
@@ -84,16 +93,19 @@ class PixCollectorService {
   async execute(
     ispb: string,
     reply: FastifyReply,
-    isMultiPart: boolean
+    isMultiPart: boolean,
+    interationId?: string
   ): Promise<Transaction[] | Transaction | null> {
     const transactions = await this.waitForMessages(ispb, isMultiPart);
     this.createReadableAndWritableStream(transactions, reply);
+    this.interationService.execute(ispb);
     return transactions;
   }
 }
 
 const pixCollectorServiceInstance = new PixCollectorService(
-  transactionRepositoryInstance
+  transactionRepositoryInstance,
+  interationServiceInstance
 );
 
 export { PixCollectorService, pixCollectorServiceInstance };
