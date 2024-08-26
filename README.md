@@ -10,7 +10,7 @@
  <a href="#autor">Autor</a>
 </p>
 <h4 align="center"> 
-	🚧  App Pix Message 🚀 Em desenvolvimento...  🚧
+	App Pix Message 🚀 - Concluído
 </h4>
 
 ## 💻 Sobre o projeto
