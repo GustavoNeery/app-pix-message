@@ -3,7 +3,7 @@ services:
     image: postgres
     container_name: teste-db-pix
     environment:
-      - POSTGRES_DB=testedbpixmessage
+      - POSTGRES_DB=dbpixmessage
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=mypwd
     ports:
