@@ -23,7 +23,8 @@ O App Pix Message Collector é uma api criada como base a implementação utiliz
 - [x] Listar várias transações
 - [x] Listar uma transação
 - [ ] Listar transações de forma recursiva
-- [ ] Interromper busca por transações
+- [x] Listar transações passando o ID buscando no banco
+- [x] Interromper busca por transações
 
 ## 🚀 Como executar o projeto
 
@@ -89,3 +90,13 @@ As seguintes ferramentas foram usadas na construção do projeto:
 - Teste de API: [Insomnia](https://insomnia.rest/)
 
 ## 👨‍💻 Decisões de Desenvolvimento
+
+- Criação e geração aleatória das transações e participantes.
+- Organização da arquitetura para essa primeira solução.
+- Inclusão do armazenamento dessas informações geradas no Banco de Dados.
+- Implementação de melhorias com base na especificação técnica para buscar e exibir as transações.
+- Criação de interação tentando estabelecer um relacionamento com outra tabela, mas sem sucesso.
+- Criação de interação introduzindo apenas um campo ispb para aplicar a regra de negócio, o que funcionou corretamente.
+- Organização da arquitetura da solução.
+- Por fim, criação da rota DELETE para interromper o consumo de mensagens.
+- A ideia geral sempre foi primeiro gerar e popular o banco de dados com a rota POST. Após fazer essa rota funcionar conforme solicitado, partir para as rotas GET, começando com um simples GET que retornava todas as transações. Em seguida, foi incrementado o GET de acordo com o que foi solicitado na especificação, e, por fim, houve a tentativa de juntar tudo isso e manter de forma recursiva a busca das mensagens com limitações de quantidade.
