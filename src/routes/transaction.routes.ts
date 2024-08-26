@@ -3,6 +3,7 @@ import TransactionController from "../controllers/TransactionController";
 import IRequestParamsDTO from "../dtos/IRequestParamsDTO";
 import PixCollectorController from "../controllers/PixCollectorController";
 import interationController from "../controllers/InterationController";
+import StopInterationController from "../controllers/StopInterationController";
 
 export async function createTransaction(app: FastifyInstance) {
   app.get(
@@ -32,6 +33,16 @@ export async function createTransaction(app: FastifyInstance) {
       reply: FastifyReply
     ) => {
       await TransactionController.execute(request, reply);
+    }
+  );
+
+  app.delete(
+    "/api/util/msgs/:ispb/:number",
+    async (
+      request: FastifyRequest<{ Params: IRequestParamsDTO }>,
+      reply: FastifyReply
+    ) => {
+      await StopInterationController.execute(request, reply);
     }
   );
 }
