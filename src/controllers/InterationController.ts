@@ -14,7 +14,7 @@ import {
   transactionServiceInstance,
 } from "../services/TransactionService";
 
-class PixCollectorController {
+class InterationController {
   private pixCollectorService: PixCollectorService;
   private interationService: InterationService;
   private transactionService: TransactionService;
@@ -32,30 +32,58 @@ class PixCollectorController {
     request: FastifyRequest<{ Params: IRequestParamsDTO }>,
     reply: FastifyReply
   ) {
-    const { ispb } = request.params;
+    const { ispb, interationId } = request.params;
     const header = request.headers["accept"];
     let isMultiPart = false;
 
     try {
-      const pullNextUri = "";
+      let pullNextUri = "";
+      let transactions = null;
 
       if (header === "multipart/json") {
         isMultiPart = true;
       }
 
-      if (!ispb) {
-        throw AppError.badRequest("ISPB not provided.");
+      if (!ispb || !interationId) {
+        throw AppError.badRequest("ISPB or InterationId not provided.");
       }
+
+      const interation =
+        await this.interationService.getInteration(interationId);
+
+      const interationWithIspb =
+        await this.interationService.getInterationByIspb(ispb, interationId);
+
+      if (!interationWithIspb) {
+        return reply.code(204).send();
+      }
+
+      if (
+        await this.interationService.hasExceededLimitAmountOfCount(
+          interationWithIspb
+        )
+      ) {
+        throw AppError.tooManyRequests(
+          "Number of consumers cannot be exceeded."
+        );
+      }
+
+      if (!interation) {
+        throw AppError.notFound("Interation not found.");
+      } else {
+        pullNextUri = `/api/pix/${ispb}/stream/${interation.id}`;
+      }
+
+      transactions = await this.pixCollectorService.execute(
+        ispb,
+        reply,
+        isMultiPart,
+        interationWithIspb
+      );
 
       if (!(await this.transactionService.verifyIspbExists(ispb))) {
         return reply.code(204).send();
       }
-
-      const transactions = await this.pixCollectorService.execute(
-        ispb,
-        reply,
-        isMultiPart
-      );
 
       if (!transactions) {
         return reply.code(204).send();
@@ -76,10 +104,10 @@ class PixCollectorController {
   }
 }
 
-const pixCollectorController = new PixCollectorController(
+const interationController = new InterationController(
   pixCollectorServiceInstance,
   interationServiceInstance,
   transactionServiceInstance
 );
 
-export default pixCollectorController;
+export default interationController;

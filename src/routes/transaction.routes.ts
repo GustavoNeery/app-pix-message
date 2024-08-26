@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import TransactionController from "../controllers/TransactionController";
 import IRequestParamsDTO from "../dtos/IRequestParamsDTO";
 import PixCollectorController from "../controllers/PixCollectorController";
+import interationController from "../controllers/InterationController";
 
 export async function createTransaction(app: FastifyInstance) {
   app.get(
@@ -20,7 +21,7 @@ export async function createTransaction(app: FastifyInstance) {
       request: FastifyRequest<{ Params: IRequestParamsDTO }>,
       reply: FastifyReply
     ) => {
-      await PixCollectorController.execute(request, reply);
+      await interationController.execute(request, reply);
     }
   );
 

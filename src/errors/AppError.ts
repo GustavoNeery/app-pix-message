@@ -16,6 +16,10 @@ class AppError extends Error {
   static notFound(message: string): AppError {
     return new AppError(message, 404);
   }
+
+  static tooManyRequests(message: string): AppError {
+    return new AppError(message, 429);
+  }
 }
 
 export { AppError };

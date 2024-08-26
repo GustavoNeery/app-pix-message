@@ -4,6 +4,7 @@ import { ParticipantService } from "../services/ParticipantService";
 import { participantServiceInstance } from "../services/ParticipantService";
 import { TransactionRepository } from "../repositories/transaction/TransactionRepository";
 import { transactionRepositoryInstance } from "../repositories/transaction/TransactionRepository";
+import { Transaction } from "../entities/Transaction";
 
 class TransactionService {
   private participantService: ParticipantService;
@@ -26,6 +27,27 @@ class TransactionService {
       pagador: await this.participantService.execute(),
       recebedor: await this.participantService.execute(ispb),
     };
+  }
+
+  async verifyIspbExists(ispb: string): Promise<Transaction | null> {
+    const timeout = 8000;
+    const interval = 500;
+    const maxAttempts = timeout / interval;
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      const transaction =
+        await this.transactionRepository.findFirstByIspb(ispb);
+
+      if (transaction) {
+        return transaction;
+      }
+
+      attempts++;
+      await new Promise((resolve) => setTimeout(resolve, interval));
+    }
+
+    return null;
   }
 
   async execute(number: string, ispb: string) {

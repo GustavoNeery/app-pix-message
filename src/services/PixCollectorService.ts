@@ -7,6 +7,7 @@ import {
   InterationService,
   interationServiceInstance,
 } from "./InterationService";
+import { Interation } from "../entities/Interation";
 
 class PixCollectorService {
   private readonly maxWaitTime = 8000; // 8 segundos
@@ -21,7 +22,7 @@ class PixCollectorService {
     this.interationService = interationService;
   }
 
-  async waitForMessages(
+  async waitForFindTransactions(
     ispb: string,
     isMultiPart: boolean
   ): Promise<Transaction[] | Transaction | null> {
@@ -90,15 +91,42 @@ class PixCollectorService {
     });
   }
 
+  async executeFluxControl(
+    ispb: string,
+    reply: FastifyReply,
+    isMultiPart: boolean,
+    interationWithIspb?: Interation
+  ) {
+    let transactions: Transaction[] | null | Transaction = [];
+    transactions = await this.waitForFindTransactions(ispb, isMultiPart);
+
+    if (transactions) {
+      if (interationWithIspb) {
+        this.createReadableAndWritableStream(transactions, reply);
+        this.interationService.incrementCount(ispb, interationWithIspb.id);
+      } else {
+        const newInteration = await this.interationService.execute(ispb);
+        this.createReadableAndWritableStream(transactions, reply);
+        this.interationService.incrementCount(ispb, newInteration.id);
+      }
+    }
+
+    return transactions;
+  }
+
   async execute(
     ispb: string,
     reply: FastifyReply,
     isMultiPart: boolean,
-    interationId?: string
+    interationWithIspb?: Interation
   ): Promise<Transaction[] | Transaction | null> {
-    const transactions = await this.waitForMessages(ispb, isMultiPart);
-    this.createReadableAndWritableStream(transactions, reply);
-    this.interationService.execute(ispb);
+    const transactions = await this.executeFluxControl(
+      ispb,
+      reply,
+      isMultiPart,
+      interationWithIspb
+    );
+
     return transactions;
   }
 }

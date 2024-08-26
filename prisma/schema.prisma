@@ -29,7 +29,6 @@ model Transaction {
   dataHoraPagamento DateTime    @map("data_hora_pagamento")
   pagadorId         String
   recebedorId       String
-  interationId      String @default("")
 }
 
 model Interation {
