@@ -37,7 +37,7 @@ export async function createTransaction(app: FastifyInstance) {
   );
 
   app.delete(
-    "/api/util/msgs/:ispb/:number",
+    "/api/pix/:ispb/stream/:interationId",
     async (
       request: FastifyRequest<{ Params: IRequestParamsDTO }>,
       reply: FastifyReply

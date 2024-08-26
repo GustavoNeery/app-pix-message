@@ -57,6 +57,19 @@ class InterationService {
     return null;
   }
 
+  async getInterationByIspbNoWait(ispb: string, interationId: string) {
+    const interation = await this.interationRepository.findByIspb(
+      ispb,
+      interationId
+    );
+
+    if (interation) {
+      return interation;
+    }
+
+    return null;
+  }
+
   async execute(ispb: string): Promise<Interation> {
     const interation = await this.interationRepository.create(ispb);
     return interation;

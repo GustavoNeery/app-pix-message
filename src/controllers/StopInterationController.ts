@@ -21,7 +21,14 @@ class StopInterationController {
       if (!interationId || !ispb) {
         throw AppError.badRequest("InterationId or Ispb not provied.");
       }
-      await this.stopInterationService.execute(ispb, interationId);
+      const interation = await this.stopInterationService.execute(
+        ispb,
+        interationId
+      );
+
+      if (!interation) {
+        throw AppError.notFound("Interation not found.");
+      }
     } catch (error) {
       if (error instanceof AppError) {
         return reply.status(error.statusCode).send({ error: error.message });

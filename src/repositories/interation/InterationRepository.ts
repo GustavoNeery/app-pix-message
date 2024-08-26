@@ -43,6 +43,14 @@ class InterationRepository implements IInterationRepository {
       },
     });
   }
+
+  async delete(interation: Interation): Promise<void> {
+    await prisma.interation.delete({
+      where: {
+        id: interation.id,
+      },
+    });
+  }
 }
 
 const interationRepositoryInstance = new InterationRepository();
