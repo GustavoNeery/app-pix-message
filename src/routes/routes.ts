@@ -1,11 +1,11 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import TransactionController from "../controllers/TransactionController";
 import IRequestParamsDTO from "../dtos/IRequestParamsDTO";
 import PixCollectorController from "../controllers/PixCollectorController";
 import interationController from "../controllers/InterationController";
 import StopInterationController from "../controllers/StopInterationController";
+import { generate } from "../controllers/generate";
 
-export async function createTransaction(app: FastifyInstance) {
+export async function transactionRoutes(app: FastifyInstance) {
   app.get(
     "/api/pix/:ispb/stream/start",
     async (
@@ -26,15 +26,7 @@ export async function createTransaction(app: FastifyInstance) {
     }
   );
 
-  app.post(
-    "/api/util/msgs/:ispb/:number",
-    async (
-      request: FastifyRequest<{ Params: IRequestParamsDTO }>,
-      reply: FastifyReply
-    ) => {
-      await TransactionController.execute(request, reply);
-    }
-  );
+  app.post("/api/util/msgs/:ispb/:number", generate);
 
   app.delete(
     "/api/pix/:ispb/stream/:interationId",

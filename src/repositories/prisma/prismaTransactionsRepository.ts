@@ -1,10 +1,9 @@
 import { prisma } from "../../lib/prisma";
+import { ITransactionRepository } from "../ITransactionRepository";
 import ICreateTransactionDTO from "../../dtos/ICreateTransactionDTO";
-import { ITransactionRepository } from "../transaction/ITransactionRepository";
-import { Transaction } from "../../entities/Transaction";
 
-class TransactionRepository implements ITransactionRepository {
-  async create(transaction: ICreateTransactionDTO): Promise<Transaction> {
+export class PrismaTransactionRepository implements ITransactionRepository {
+  async create(transaction: ICreateTransactionDTO) {
     const transactionCreated = await prisma.transaction.create({
       data: {
         valor: transaction.valor,
@@ -25,7 +24,7 @@ class TransactionRepository implements ITransactionRepository {
     return transactionCreated;
   }
 
-  async findByIspb(ispb: string): Promise<Transaction[]> {
+  async findByIspb(ispb: string) {
     const transactions = await prisma.transaction.findMany({
       where: {
         recebedor: {
@@ -42,7 +41,7 @@ class TransactionRepository implements ITransactionRepository {
     return transactions;
   }
 
-  async findFirstByIspb(ispb: string): Promise<Transaction | null> {
+  async findFirstByIspb(ispb: string) {
     const transaction = await prisma.transaction.findFirst({
       where: {
         recebedor: {
@@ -58,7 +57,3 @@ class TransactionRepository implements ITransactionRepository {
     return transaction;
   }
 }
-
-const transactionRepositoryInstance = new TransactionRepository();
-
-export { transactionRepositoryInstance, TransactionRepository };

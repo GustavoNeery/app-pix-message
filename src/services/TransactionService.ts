@@ -2,17 +2,16 @@ import { Decimal } from "@prisma/client/runtime/library";
 import ICreateTransactionDTO from "../dtos/ICreateTransactionDTO";
 import { ParticipantService } from "../services/ParticipantService";
 import { participantServiceInstance } from "../services/ParticipantService";
-import { TransactionRepository } from "../repositories/transaction/TransactionRepository";
-import { transactionRepositoryInstance } from "../repositories/transaction/TransactionRepository";
+import { PrismaTransactionRepository } from "../repositories/prisma/prismaTransactionsRepository";
 import { Transaction } from "../entities/Transaction";
 
 class TransactionService {
   private participantService: ParticipantService;
-  private transactionRepository: TransactionRepository;
+  private transactionRepository: PrismaTransactionRepository;
 
   constructor(
     participantService: ParticipantService,
-    transactionRepository: TransactionRepository
+    transactionRepository: PrismaTransactionRepository
   ) {
     this.participantService = participantService;
     this.transactionRepository = transactionRepository;
