@@ -37,7 +37,6 @@ class InterationController {
     let isMultiPart = false;
 
     try {
-      let pullNextUri = "";
       let transactions = null;
 
       if (header === "multipart/json") {
@@ -47,9 +46,6 @@ class InterationController {
       if (!ispb || !interationId) {
         throw AppError.badRequest("ISPB or InterationId not provided.");
       }
-
-      const interation =
-        await this.interationService.getInteration(interationId);
 
       const interationWithIspb =
         await this.interationService.getInterationByIspb(ispb, interationId);
@@ -67,12 +63,7 @@ class InterationController {
           "Number of consumers cannot be exceeded."
         );
       }
-
-      if (!interation) {
-        throw AppError.notFound("Interation not found.");
-      } else {
-        pullNextUri = `/api/pix/${ispb}/stream/${interation.id}`;
-      }
+      const pullNextUri = `teste/${ispb}/${interationWithIspb.id}`;
 
       transactions = await this.pixCollectorService.execute(
         ispb,
@@ -81,7 +72,7 @@ class InterationController {
         interationWithIspb
       );
 
-      if (!(await this.transactionService.verifyIspbExists(ispb))) {
+      if (!(await this.transactionService.verifyTransactionWithIspbExists(ispb))) {
         return reply.code(204).send();
       }
 
