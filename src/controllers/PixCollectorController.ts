@@ -37,8 +37,6 @@ class PixCollectorController {
     let isMultiPart = false;
 
     try {
-      const pullNextUri = "";
-
       if (header === "multipart/json") {
         isMultiPart = true;
       }
@@ -47,9 +45,17 @@ class PixCollectorController {
         throw AppError.badRequest("ISPB not provided.");
       }
 
-      if (!(await this.transactionService.verifyIspbExists(ispb))) {
+      if (!(await this.transactionService.verifyTransactionWithIspbExists(ispb))) {
         return reply.code(204).send();
       }
+      const interation = await this.interationService.execute(ispb);
+      const pullNextUri = `teste/${ispb}/${interation.id}`;
+
+      reply.raw.writeHead(200, {
+        "Pull-Next": pullNextUri,
+        "Content-Type": "application/json",
+        "Transfer-Encoding": "chunked",
+      });
 
       const transactions = await this.pixCollectorService.execute(
         ispb,
@@ -60,12 +66,6 @@ class PixCollectorController {
       if (!transactions) {
         return reply.code(204).send();
       }
-
-      reply.raw.writeHead(200, {
-        "Pull-Next": pullNextUri,
-        "Content-Type": "application/json",
-        "Transfer-Encoding": "chunked",
-      });
     } catch (error) {
       if (error instanceof AppError) {
         return reply.status(error.statusCode).send({ error: error.message });

@@ -29,7 +29,7 @@ class TransactionService {
     };
   }
 
-  async verifyIspbExists(ispb: string): Promise<Transaction | null> {
+  async verifyTransactionWithIspbExists(ispb: string): Promise<Transaction | null> {
     const timeout = 8000;
     const interval = 500;
     const maxAttempts = timeout / interval;

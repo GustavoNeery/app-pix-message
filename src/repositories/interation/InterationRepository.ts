@@ -25,7 +25,7 @@ class InterationRepository implements IInterationRepository {
     return interation;
   }
 
-  async updateCount(interation: Interation): Promise<void> {
+  async updateInterationCount(interation: Interation): Promise<void> {
     await prisma.interation.update({
       where: { id: interation.id },
       data: {

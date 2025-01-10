@@ -22,7 +22,7 @@ class PixCollectorService {
     this.interationService = interationService;
   }
 
-  async waitForFindTransactions(
+  async findTransactionsWithWait(
     ispb: string,
     isMultiPart: boolean
   ): Promise<Transaction[] | Transaction | null> {
@@ -30,10 +30,7 @@ class PixCollectorService {
 
     return new Promise((resolve) => {
       const interval = setInterval(async () => {
-        const transactions = await this.verifyFindManyOrFindFirst(
-          ispb,
-          isMultiPart
-        );
+        const transactions = isMultiPart ? this.getAllTransactionsByIspb(ispb) : this.getFirstTransactionByIspb(ispb);
         if (transactions || Date.now() - startTime > this.maxWaitTime) {
           clearInterval(interval);
           resolve(transactions);
@@ -42,12 +39,12 @@ class PixCollectorService {
     });
   }
 
-  async verifyFindManyOrFindFirst(ispb: string, isMultiPart: boolean) {
-    if (isMultiPart) {
-      return await this.transactionRepository.findByIspb(ispb);
-    } else {
-      return await this.transactionRepository.findFirstByIspb(ispb);
-    }
+  async getAllTransactionsByIspb(ispb: string) {
+    return await this.transactionRepository.findAllTransactionsByIspb(ispb);
+  }
+
+  async getFirstTransactionByIspb(ispb: string) {
+    return await this.transactionRepository.findFirstTransactionByIspb(ispb);
   }
 
   createReadableAndWritableStream(
@@ -98,16 +95,14 @@ class PixCollectorService {
     interationWithIspb?: Interation
   ) {
     let transactions: Transaction[] | null | Transaction = [];
-    transactions = await this.waitForFindTransactions(ispb, isMultiPart);
+    transactions = await this.findTransactionsWithWait(ispb, isMultiPart);
 
     if (transactions) {
       if (interationWithIspb) {
+        this.interationService.incrementInterationCount(interationWithIspb);
         this.createReadableAndWritableStream(transactions, reply);
-        this.interationService.incrementCount(ispb, interationWithIspb.id);
       } else {
-        const newInteration = await this.interationService.execute(ispb);
         this.createReadableAndWritableStream(transactions, reply);
-        this.interationService.incrementCount(ispb, newInteration.id);
       }
     }
 

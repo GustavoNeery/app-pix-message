@@ -25,7 +25,7 @@ class TransactionRepository implements ITransactionRepository {
     return transactionCreated;
   }
 
-  async findByIspb(ispb: string): Promise<Transaction[]> {
+  async findAllTransactionsByIspb(ispb: string): Promise<Transaction[]> {
     const transactions = await prisma.transaction.findMany({
       where: {
         recebedor: {
@@ -42,7 +42,7 @@ class TransactionRepository implements ITransactionRepository {
     return transactions;
   }
 
-  async findFirstByIspb(ispb: string): Promise<Transaction | null> {
+  async findFirstTransactionByIspb(ispb: string): Promise<Transaction | null> {
     const transaction = await prisma.transaction.findFirst({
       where: {
         recebedor: {

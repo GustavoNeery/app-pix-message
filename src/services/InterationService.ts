@@ -16,11 +16,8 @@ class InterationService {
     return await this.interationRepository.findById(interationId);
   }
 
-  async incrementCount(ispb: string, interationId: string | undefined) {
-    const interation = await this.getInteration(interationId);
-    if (interation) {
-      await this.interationRepository.updateCount(interation);
-    }
+  async incrementInterationCount(interation: Interation) {
+    await this.interationRepository.updateInterationCount(interation);
   }
 
   async hasExceededLimitAmountOfCount(
@@ -72,6 +69,9 @@ class InterationService {
 
   async execute(ispb: string): Promise<Interation> {
     const interation = await this.interationRepository.create(ispb);
+    if(interation){
+      this.incrementInterationCount(interation);
+    }
     return interation;
   }
 }
